@@ -1,0 +1,62 @@
+﻿@page "/cadastro"
+@inject DadosCarteiras  dados
+
+<PageTitle>Cadastrar Carteira</PageTitle>
+
+<h5>Nome:</h5>
+<input type="text" @bind=nome/>
+
+<h5>Valor Deposito  Inicial:</h5>
+<input type="text" @bind=valor/>
+<br><br>
+
+<h5>CPF:</h5>
+<input type="text" @bind=CPF/>
+<br><br>
+
+
+<button class="btn btn-primary" @onclick="CriarConta">
+    Criar Conta</button>
+
+<br>
+<br>
+@foreach (var linha in mensagem.Split(Environment.NewLine))
+{
+    <p>@linha</p>
+}
+
+
+@code {
+    private string nome;
+    private double valor;
+    private string mensagem="";
+    public double LimiteConta;
+    private string CPF;
+
+    private void CriarConta()
+
+    {
+        if(valor <= 0)
+        {
+            mensagem = "Para criar uma conta é obrigatório realizar um deposito!";
+            return;
+        }
+
+        Carteira novaConta = new Carteira();
+        novaConta.Dono = nome;
+        novaConta.LimiteConta = valor * 0.1;
+        novaConta.Depositar(valor);
+        novaConta.CPF = CPF;
+        dados.ListaDados.Add(novaConta);
+        mensagem = $"Carteira Criada com Sucesso!";
+        mensagem += $"{Environment.NewLine} Nome da carteira {nome}";
+        mensagem += $"{Environment.NewLine} Saldo da carteira {valor}";
+        mensagem += $"{Environment.NewLine} Carteira de Número {novaConta.ID}";
+        mensagem += $"{Environment.NewLine} O limite da conta é: {novaConta.LimiteConta}";
+
+        nome = "";
+        CPF = "";
+        valor = 0;
+    }
+}
+

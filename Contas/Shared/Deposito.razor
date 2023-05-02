@@ -1,0 +1,33 @@
+﻿@inject DadosCarteiras dados
+
+<h3>Dados para Deposito</h3>
+<br>
+<br>
+<p>Valor Para Deposito:</p>
+<input type="number" @bind="valor" />
+<button @onclick="Depositar">Confirmar Deposito </button>
+
+@if (deposito0k is not null)
+{
+    @if (deposito0k == true)
+    {
+        <h1>Deposito realizado com sucesso!</h1>
+    }
+    else
+    {
+        <h1>Erro! Não foi possivel realizar está operação</h1>
+    }
+}
+
+@code {
+    [Parameter]
+    public Carteira? Conta { get; set; }
+
+    private bool? deposito0k = null;
+    private double valor;
+
+    private void Depositar()
+    {
+        deposito0k = Conta.Depositar(valor, dados.DataDoSistema);
+    }
+}

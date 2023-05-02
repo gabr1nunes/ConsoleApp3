@@ -1,0 +1,89 @@
+﻿@inject DadosCarteiras dados
+
+<h3>Transferência</h3>
+@if (transferencia0k is null || transferencia0k == false)
+{
+    <p>Conta Destino</p>
+    <input type="text" @bind=contaDestino/>
+    <br><br>
+    <p>Valor da Transferencia</p>
+    <input type="number" @bind=ValorTransferencia/>
+    <br><br>
+    @if (ValorTransferencia > 1000)
+    {
+        <p>O valor pretendido excedeu R$1000, é preciso digitar o 3 primeiros digitos de seu CPF!</p>
+        <input type="text" @bind=CPF/>
+        <br><br>
+    }
+    <button @onclick=Transferir> Confirmar Transferência</button>
+}
+
+@if(transferencia0k is not null)
+{
+    @if (transferencia0k == true)
+    {
+        <h1>Transferência realizada com sucesso!</h1>
+        <p>Resumo</p>
+        <br>
+        <p>Destino: @contaDestino</p>
+         <br>
+        <p>Valor: @ValorTransferencia</p>
+          <br>
+        <p>Data: @DateTime.Now.ToLongDateString() </p>
+
+    }
+    else if (transferencia0k == false && ValorTransferencia > Conta.Saldo)
+    {
+        <h1>Erro! Saldo insuficiente para realizar essa transferência</h1>
+    }
+    else
+    {
+       <h1>Erro! não foi possivel realizar está operação</h1>  
+    }
+}
+
+@code {
+    [Parameter]
+    public Carteira Conta { get; set; }
+    bool? transferencia0k = null;
+    string contaDestino;
+    double ValorTransferencia;
+    private string CPF = "";
+
+    public void Transferir()
+    {
+        Carteira destino = dados.ListaDados.FirstOrDefault(c => c.Dono == contaDestino);
+        if (destino is not null)
+        {
+            if (ValorTransferencia > 1000)
+            {
+                if (CPF != Conta.CPF.Substring(0, 3))
+                {
+                    transferencia0k = false;
+                    return;
+                }
+            }
+            if (ValorTransferencia > Conta.Saldo)
+            {
+                transferencia0k = false;
+                return;
+            }
+            Conta.Transferir(destino, ValorTransferencia);
+            transferencia0k = true;
+        }
+        else
+        {
+            transferencia0k = false;
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
